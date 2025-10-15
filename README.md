@@ -8,7 +8,7 @@ You can run any script from this repository using **loadstring**.
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Defy-cloud/DefyzHub/main/ScriptName.lua"))()
 
-### 📂 Notes
+📂 Notes
 
 Works with most executors that support HttpGet.
 
