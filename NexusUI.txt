@@ -423,7 +423,18 @@ function NexusUI:CreateWindow(cfg)
         end)
     end
 
-    CloseBtn.MouseButton1Click:Connect(HideGUI)
+    CloseBtn.MouseButton1Click:Connect(function()
+        if busy then return end
+        busy = true
+        MinPill.Visible = false
+        Tween(Main, {Size = UDim2.new(0, WW, 0, 0)}, 0.2)
+        task.wait(0.22)
+        Main.Visible = false
+        Main.Size = UDim2.new(0, WW, 0, WH)
+        guiOpen = false
+        busy = false
+    end)
+
     MinBtn.MouseButton1Click:Connect(HideGUI)
 
     MinBtn.MouseEnter:Connect(function()
@@ -447,22 +458,23 @@ function NexusUI:CreateWindow(cfg)
         Position = UDim2.new(0, 0, 0, 54),
         BackgroundColor3 = T.Surface,
         BorderSizePixel = 0,
+        ClipsDescendants = true,
         Parent = Main,
     })
-    -- Right border line
+    -- Right border line parented to Main so UIListLayout ignores it
     New("Frame", {
-        Size = UDim2.new(0, 1, 1, 0),
-        Position = UDim2.new(1, -1, 0, 0),
+        Size = UDim2.new(0, 1, 1, -54),
+        Position = UDim2.new(0, 138, 0, 54),
         BackgroundColor3 = T.Border,
         BorderSizePixel = 0,
-        Parent = TabBar,
+        Parent = Main,
     })
 
     local TabLayout = Instance.new("UIListLayout")
     TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
     TabLayout.Padding = UDim.new(0, 3)
     TabLayout.Parent = TabBar
-    Pad(TabBar, 10, 10, 8, 8)
+    Pad(TabBar, 8, 8, 6, 6)
 
     -- ── Content Area ────────────────────────────────────────
     local ContentArea = New("Frame", {
