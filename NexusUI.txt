@@ -354,7 +354,38 @@ function NexusUI:CreateWindow(cfg)
         Parent = MinPill,
     })
 
+    -- ── Visibility Logic ────────────────────────────────────
+    local guiOpen = true
+    local busy    = false
+
+    local function ShowGUI()
+        if busy then return end
+        busy = true
+        guiOpen = true
+        MinPill.Visible = false
+        MinPill.Size = UDim2.new(0, 120, 0, 38)
+        Main.Size = UDim2.new(0, WW, 0, 0)
+        Main.Visible = true
+        Tween(Main, {Size = UDim2.new(0, WW, 0, WH)}, 0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        task.delay(0.3, function() busy = false end)
+    end
+
+    local function HideGUI()
+        if busy then return end
+        busy = true
+        guiOpen = false
+        Tween(Main, {Size = UDim2.new(0, WW, 0, 0)}, 0.2)
+        task.wait(0.22)
+        Main.Visible = false
+        Main.Size = UDim2.new(0, WW, 0, WH)
+        MinPill.Size = UDim2.new(0, 0, 0, 38)
+        MinPill.Visible = true
+        Tween(MinPill, {Size = UDim2.new(0, 120, 0, 38)}, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+        task.delay(0.3, function() busy = false end)
+    end
+
     -- Drag the pill via PillBtn, distinguish drag vs tap
+    -- (must be after ShowGUI/HideGUI are declared)
     do
         local dragging, dragStart, pillStart, didDrag = false, nil, nil, false
         PillBtn.InputBegan:Connect(function(i)
@@ -388,30 +419,8 @@ function NexusUI:CreateWindow(cfg)
             end
         end)
         PillBtn.MouseButton1Click:Connect(function()
-            if not didDrag then
-                ShowGUI()
-            end
+            if not didDrag then ShowGUI() end
         end)
-    end
-
-    -- ── Visibility Logic ────────────────────────────────────
-    local guiOpen = true
-
-    local function ShowGUI()
-        guiOpen = true
-        MinPill.Visible = false
-        Main.Visible = true
-        Main.Size = UDim2.new(0, WW, 0, 0)
-        Tween(Main, {Size = UDim2.new(0, WW, 0, WH)}, 0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-    end
-
-    local function HideGUI()
-        guiOpen = false
-        Tween(Main, {Size = UDim2.new(0, WW, 0, 0)}, 0.2)
-        task.wait(0.2)
-        Main.Visible = false
-        MinPill.Visible = true
-        Tween(MinPill, {Size = UDim2.new(0, 120, 0, 38)}, 0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
     end
 
     CloseBtn.MouseButton1Click:Connect(HideGUI)
