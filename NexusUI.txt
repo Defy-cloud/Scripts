@@ -353,7 +353,46 @@ function NexusUI:CreateWindow(cfg)
         Text = "",
         Parent = MinPill,
     })
-    MakeDraggable(MinPill, MinPill)
+
+    -- Drag the pill via PillBtn, distinguish drag vs tap
+    do
+        local dragging, dragStart, pillStart, didDrag = false, nil, nil, false
+        PillBtn.InputBegan:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.MouseButton1
+            or i.UserInputType == Enum.UserInputType.Touch then
+                dragging  = true
+                didDrag   = false
+                dragStart = i.Position
+                pillStart = MinPill.Position
+            end
+        end)
+        UIS.InputChanged:Connect(function(i)
+            if dragging and (
+                i.UserInputType == Enum.UserInputType.MouseMovement
+                or i.UserInputType == Enum.UserInputType.Touch
+            ) then
+                local delta = i.Position - dragStart
+                if math.abs(delta.X) > 4 or math.abs(delta.Y) > 4 then
+                    didDrag = true
+                end
+                MinPill.Position = UDim2.new(
+                    pillStart.X.Scale, pillStart.X.Offset + delta.X,
+                    pillStart.Y.Scale, pillStart.Y.Offset + delta.Y
+                )
+            end
+        end)
+        UIS.InputEnded:Connect(function(i)
+            if i.UserInputType == Enum.UserInputType.MouseButton1
+            or i.UserInputType == Enum.UserInputType.Touch then
+                dragging = false
+            end
+        end)
+        PillBtn.MouseButton1Click:Connect(function()
+            if not didDrag then
+                ShowGUI()
+            end
+        end)
+    end
 
     -- ── Visibility Logic ────────────────────────────────────
     local guiOpen = true
@@ -377,7 +416,6 @@ function NexusUI:CreateWindow(cfg)
 
     CloseBtn.MouseButton1Click:Connect(HideGUI)
     MinBtn.MouseButton1Click:Connect(HideGUI)
-    PillBtn.MouseButton1Click:Connect(ShowGUI)
 
     MinBtn.MouseEnter:Connect(function()
         local dash = MinBtn:FindFirstChildOfClass("Frame")
