@@ -1,17 +1,12 @@
-local StarterGui = game:GetService("StarterGui")
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-
-StarterGui:SetCore("TopbarEnabled", false)
-
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local Players      = game:GetService("Players")
+local RunService   = game:GetService("RunService")
+local LP           = Players.LocalPlayer
 
 local sg = Instance.new("ScreenGui")
 sg.Name = "FakePing"
 sg.ResetOnSpawn = false
-sg.DisplayOrder = 9e18
-sg.Parent = playerGui
+sg.DisplayOrder = 999
+sg.Parent = LP:WaitForChild("PlayerGui")
 
 local lbl = Instance.new("TextLabel")
 lbl.Size = UDim2.new(0, 70, 0, 24)
@@ -26,10 +21,10 @@ lbl.Parent = sg
 local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0,6); c.Parent = lbl
 
 local counter = 0
+lbl.Text = "7 ms"
 RunService.Heartbeat:Connect(function()
     counter = counter + 1
     if counter % 60 == 0 then
         lbl.Text = math.random(1,10) <= 7 and "7 ms" or (math.random(0,1) == 0 and "6 ms" or "8 ms")
     end
 end)
-lbl.Text = "7 ms"
